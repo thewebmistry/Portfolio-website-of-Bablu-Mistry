@@ -1796,34 +1796,48 @@
 </script>
   <script>
   (function() {
-    window.addEventListener('DOMContentLoaded', function() {
-      const aboutSection = document.getElementById('about');
-      if (!aboutSection) return;
+    // Wait for the entire page (including loader) to be fully loaded
+    window.addEventListener('load', function() {
+      // Check if we are on desktop (view width > 992px)
+      if (window.innerWidth <= 992) {
+        console.log("Mobile view: animations disabled (as per existing CSS)");
+        return;
+      }
 
+      const aboutSection = document.getElementById('about');
+      if (!aboutSection) {
+        console.warn("About section not found");
+        return;
+      }
+
+      // Get all skill elements
       const skillCards = aboutSection.querySelectorAll('.skills-grid .skill-card');
       const circleCards = aboutSection.querySelectorAll('.circular-progress-box .circle-card');
       const linearProgressBox = aboutSection.querySelector('.linear-progress-box');
       const linearBars = aboutSection.querySelectorAll('.linear-bar-fill');
       const circleSpans = aboutSection.querySelectorAll('.circle span');
 
-      if (!skillCards.length && !circleCards.length && !linearProgressBox) return;
+      if (!skillCards.length && !circleCards.length && !linearProgressBox) {
+        console.warn("No skill elements found");
+        return;
+      }
 
+      // Store target percentages for linear bars
       const barTargets = [];
       linearBars.forEach(bar => {
         const targetWidth = bar.getAttribute('data-width');
         if (targetWidth) {
           barTargets.push({ bar, targetWidth });
-          bar.style.width = '0%';
         }
       });
 
+      // Store target percentages for circular numbers
       const circleData = [];
       circleSpans.forEach(span => {
         const originalText = span.innerText.trim();
         const targetPercent = parseInt(originalText, 10);
         if (!isNaN(targetPercent)) {
-          circleData.push({ span: span, target: targetPercent, current: 0 });
-          span.innerText = '0%';
+          circleData.push({ span, target: targetPercent });
         }
       });
 
@@ -1832,13 +1846,26 @@
       function triggerSkillsAnimation() {
         if (animationTriggered) return;
         animationTriggered = true;
+        console.log("Skills animation triggered!");
 
+        // Add class to reveal cards (fade in + slide up)
         aboutSection.classList.add('skills-animated');
 
+        // 1. Linear bars: reset to 0% and then animate to target
         barTargets.forEach(item => {
-          item.bar.style.width = item.targetWidth;
+          // Override any inline style that might have been set by loader
+          item.bar.style.transition = 'none';
+          item.bar.style.width = '0%';
+          // Force reflow to ensure transition restarts
+          void item.bar.offsetWidth;
+          item.bar.style.transition = '';
+          // Animate to target after a tiny delay
+          setTimeout(() => {
+            item.bar.style.width = item.targetWidth;
+          }, 50);
         });
 
+        // 2. Circular numbers: count up from 0 to target
         circleData.forEach(item => {
           let start = 0;
           const end = item.target;
@@ -1847,6 +1874,7 @@
           const steps = duration / stepTime;
           const increment = end / steps;
           let current = 0;
+          item.span.innerText = '0%';
           const timer = setInterval(() => {
             current += increment;
             if (current >= end) {
@@ -1859,8 +1887,10 @@
         });
       }
 
+      // Create and inject the necessary CSS for the animation
       const style = document.createElement('style');
       style.textContent = `
+        /* Initially hide skill cards, circle boxes, linear box */
         #about.skills-wait-animation .skills-grid .skill-card,
         #about.skills-wait-animation .circular-progress-box .circle-card,
         #about.skills-wait-animation .linear-progress-box {
@@ -1868,12 +1898,14 @@
           transform: translateY(35px);
           transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
+        /* When animated, show them */
         #about.skills-animated .skills-grid .skill-card,
         #about.skills-animated .circular-progress-box .circle-card,
         #about.skills-animated .linear-progress-box {
           opacity: 1 !important;
           transform: translateY(0) !important;
         }
+        /* Stagger effect */
         #about.skills-animated .skills-grid .skill-card:nth-child(1) { transition-delay: 0.05s; }
         #about.skills-animated .skills-grid .skill-card:nth-child(2) { transition-delay: 0.1s; }
         #about.skills-animated .skills-grid .skill-card:nth-child(3) { transition-delay: 0.15s; }
@@ -1881,14 +1913,17 @@
         #about.skills-animated .circular-progress-box .circle-card:nth-child(1) { transition-delay: 0.1s; }
         #about.skills-animated .circular-progress-box .circle-card:nth-child(2) { transition-delay: 0.2s; }
         #about.skills-animated .linear-progress-box { transition-delay: 0.15s; }
+        /* Ensure linear bar transition works */
         .linear-bar-fill {
           transition: width 1.2s cubic-bezier(0.22, 0.97, 0.36, 1.02) !important;
         }
       `;
       document.head.appendChild(style);
 
+      // Add the "waiting" class to hide the skill elements initially
       aboutSection.classList.add('skills-wait-animation');
 
+      // Use Intersection Observer to trigger when the section becomes visible
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && !animationTriggered) {
@@ -1900,10 +1935,12 @@
 
       observer.observe(aboutSection);
 
+      // Fallback: if section is already visible (e.g., at top of page)
       if (!animationTriggered && aboutSection.getBoundingClientRect().top < window.innerHeight * 0.7) {
         triggerSkillsAnimation();
       }
 
+      // Optional: if window resizes and animation hasn't run yet
       window.addEventListener('resize', function() {
         if (!animationTriggered && aboutSection.getBoundingClientRect().top < window.innerHeight * 0.7) {
           triggerSkillsAnimation();
