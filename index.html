@@ -1794,5 +1794,123 @@
 );
   }
 </script>
+  <script>
+  (function() {
+    window.addEventListener('DOMContentLoaded', function() {
+      const aboutSection = document.getElementById('about');
+      if (!aboutSection) return;
+
+      const skillCards = aboutSection.querySelectorAll('.skills-grid .skill-card');
+      const circleCards = aboutSection.querySelectorAll('.circular-progress-box .circle-card');
+      const linearProgressBox = aboutSection.querySelector('.linear-progress-box');
+      const linearBars = aboutSection.querySelectorAll('.linear-bar-fill');
+      const circleSpans = aboutSection.querySelectorAll('.circle span');
+
+      if (!skillCards.length && !circleCards.length && !linearProgressBox) return;
+
+      const barTargets = [];
+      linearBars.forEach(bar => {
+        const targetWidth = bar.getAttribute('data-width');
+        if (targetWidth) {
+          barTargets.push({ bar, targetWidth });
+          bar.style.width = '0%';
+        }
+      });
+
+      const circleData = [];
+      circleSpans.forEach(span => {
+        const originalText = span.innerText.trim();
+        const targetPercent = parseInt(originalText, 10);
+        if (!isNaN(targetPercent)) {
+          circleData.push({ span: span, target: targetPercent, current: 0 });
+          span.innerText = '0%';
+        }
+      });
+
+      let animationTriggered = false;
+
+      function triggerSkillsAnimation() {
+        if (animationTriggered) return;
+        animationTriggered = true;
+
+        aboutSection.classList.add('skills-animated');
+
+        barTargets.forEach(item => {
+          item.bar.style.width = item.targetWidth;
+        });
+
+        circleData.forEach(item => {
+          let start = 0;
+          const end = item.target;
+          const duration = 1200;
+          const stepTime = 20;
+          const steps = duration / stepTime;
+          const increment = end / steps;
+          let current = 0;
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= end) {
+              item.span.innerText = end + '%';
+              clearInterval(timer);
+            } else {
+              item.span.innerText = Math.floor(current) + '%';
+            }
+          }, stepTime);
+        });
+      }
+
+      const style = document.createElement('style');
+      style.textContent = `
+        #about.skills-wait-animation .skills-grid .skill-card,
+        #about.skills-wait-animation .circular-progress-box .circle-card,
+        #about.skills-wait-animation .linear-progress-box {
+          opacity: 0;
+          transform: translateY(35px);
+          transition: opacity 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        #about.skills-animated .skills-grid .skill-card,
+        #about.skills-animated .circular-progress-box .circle-card,
+        #about.skills-animated .linear-progress-box {
+          opacity: 1 !important;
+          transform: translateY(0) !important;
+        }
+        #about.skills-animated .skills-grid .skill-card:nth-child(1) { transition-delay: 0.05s; }
+        #about.skills-animated .skills-grid .skill-card:nth-child(2) { transition-delay: 0.1s; }
+        #about.skills-animated .skills-grid .skill-card:nth-child(3) { transition-delay: 0.15s; }
+        #about.skills-animated .skills-grid .skill-card:nth-child(4) { transition-delay: 0.2s; }
+        #about.skills-animated .circular-progress-box .circle-card:nth-child(1) { transition-delay: 0.1s; }
+        #about.skills-animated .circular-progress-box .circle-card:nth-child(2) { transition-delay: 0.2s; }
+        #about.skills-animated .linear-progress-box { transition-delay: 0.15s; }
+        .linear-bar-fill {
+          transition: width 1.2s cubic-bezier(0.22, 0.97, 0.36, 1.02) !important;
+        }
+      `;
+      document.head.appendChild(style);
+
+      aboutSection.classList.add('skills-wait-animation');
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !animationTriggered) {
+            triggerSkillsAnimation();
+            observer.unobserve(aboutSection);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      observer.observe(aboutSection);
+
+      if (!animationTriggered && aboutSection.getBoundingClientRect().top < window.innerHeight * 0.7) {
+        triggerSkillsAnimation();
+      }
+
+      window.addEventListener('resize', function() {
+        if (!animationTriggered && aboutSection.getBoundingClientRect().top < window.innerHeight * 0.7) {
+          triggerSkillsAnimation();
+        }
+      });
+    });
+  })();
+</script>
 </body>
 </html>
