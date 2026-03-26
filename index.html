@@ -964,6 +964,67 @@
       transform: translateY(0);
     }
 
+    /* Demo Section Specific Styles */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .demo-card {
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .demo-card iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
+      display: block;
+    }
+
+    .demo-info {
+      padding: 20px;
+      flex: 1;
+    }
+
+    .demo-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    .demo-info p {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .demo-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .demo-link:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(31, 190, 191, 0.4);
+    }
+
     /* ========================================= MOBILE RESPONSIVENESS ========================================= */
     @media (max-width: 992px) {
       body {
@@ -1113,7 +1174,7 @@
         display: none;
       }
 
-      .stats-box, .skill-card, .circle-card, .linear-progress-box, .timeline-item, .card, .contact-info, .contact-form, .testimonial-card {
+      .stats-box, .skill-card, .circle-card, .linear-progress-box, .timeline-item, .card, .contact-info, .contact-form, .testimonial-card, .demo-card {
         backdrop-filter: none;
       }
 
@@ -1172,7 +1233,7 @@
         font-size: 1.8rem;
       }
 
-      .grid-container {
+      .grid-container, .demo-grid {
         grid-template-columns: 1fr;
       }
 
@@ -1215,19 +1276,19 @@
       }
 
       /* Simple tap effect */
-      .theme-toggle, .stats-box, .skill-card, .circle-card, .linear-progress-box, .timeline-item, .card, .contact-info, .contact-form, .testimonial-card {
+      .theme-toggle, .stats-box, .skill-card, .circle-card, .linear-progress-box, .timeline-item, .card, .contact-info, .contact-form, .testimonial-card, .demo-card {
         transition: transform 0.2s ease, border-color 0.2s ease !important;
         -webkit-tap-highlight-color: transparent;
       }
 
-      .theme-toggle:active, .stats-box:active, .skill-card:active, .circle-card:active, .linear-progress-box:active, .timeline-item:active, .card:active, .contact-info:active, .contact-form:active, .testimonial-card:active {
+      .theme-toggle:active, .stats-box:active, .skill-card:active, .circle-card:active, .linear-progress-box:active, .timeline-item:active, .card:active, .contact-info:active, .contact-form:active, .testimonial-card:active, .demo-card:active {
         border-color: var(--accent) !important;
         box-shadow: 0 0 15px rgba(31, 190, 191, 0.4) !important;
         transform: scale(0.98);
       }
 
       /* Solid backgrounds for mobile */
-      .stats-box, .skill-card, .circle-card, .linear-progress-box, .timeline-item, .card, .contact-info, .contact-form, .testimonial-card {
+      .stats-box, .skill-card, .circle-card, .linear-progress-box, .timeline-item, .card, .contact-info, .contact-form, .testimonial-card, .demo-card {
         background: rgba(255, 255, 255, 0.1);
       }
 
@@ -1239,7 +1300,8 @@
       body.light-mode .card,
       body.light-mode .contact-info,
       body.light-mode .contact-form,
-      body.light-mode .testimonial-card {
+      body.light-mode .testimonial-card,
+      body.light-mode .demo-card {
         background: rgba(255, 255, 255, 0.6);
       }
     }
@@ -1288,6 +1350,7 @@
         <a href="#projects" class="nav-item"><i class="fas fa-layer-group"></i><span>PROJECTS</span></a>
         <a href="#testimonials" class="nav-item"><i class="fas fa-star"></i><span>REVIEWS</span></a>
         <a href="#blogs" class="nav-item"><i class="fas fa-newspaper"></i><span>BLOGS</span></a>
+        <a href="#demo" class="nav-item"><i class="fas fa-play-circle"></i><span>DEMO</span></a>
         <a href="#contact" class="nav-item"><i class="fas fa-paper-plane"></i><span>CONTACT</span></a>
       </nav>
     </aside>
@@ -1436,6 +1499,42 @@
                   <button class="comment-btn"><i class="fas fa-paper-plane"></i></button>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="demo" class="reveal">
+        <h2 class="section-title">Live <span class="text-accent">Demos</span></h2>
+        <div class="demo-grid">
+          <div class="demo-card tilt-card">
+            <iframe src="https://example.com/demo1" loading="lazy"></iframe>
+            <div class="demo-info">
+              <h3>E-Commerce Demo</h3>
+              <p>Interactive shopping experience with cart functionality and checkout process.</p>
+              <a href="#" class="demo-link">
+                View Full Demo <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+          <div class="demo-card tilt-card">
+            <iframe src="https://example.com/demo2" loading="lazy"></iframe>
+            <div class="demo-info">
+              <h3>Dashboard Analytics</h3>
+              <p>Real-time data visualization with interactive charts and graphs.</p>
+              <a href="#" class="demo-link">
+                View Full Demo <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+          <div class="demo-card tilt-card">
+            <iframe src="https://example.com/demo3" loading="lazy"></iframe>
+            <div class="demo-info">
+              <h3>Portfolio Template</h3>
+              <p>Modern responsive portfolio design with smooth animations.</p>
+              <a href="#" class="demo-link">
+                View Full Demo <i class="fas fa-external-link-alt"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -1691,7 +1790,8 @@
           document.location.href = "/admin/";
         });
       }
-    });
+    }
+);
   }
 </script>
 </body>
