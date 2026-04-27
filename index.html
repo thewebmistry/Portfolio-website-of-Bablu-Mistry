@@ -1092,6 +1092,11 @@
         display: none;
       }
 
+      /* Ensure sections are not hidden behind bottom navigation */
+      #about, #resume, #projects, #testimonials, #blogs, #demo, #contact {
+        scroll-margin-bottom: 120px;
+      }
+
       .profile-column {
         width: 100%;
         backdrop-filter: none;
@@ -1980,10 +1985,54 @@
     .fixed-demo-btn i {
         font-size: 1.2rem;
     }
+
+    /* Mobile responsiveness for Live Demo button */
+    @media (max-width: 768px) {
+        .fixed-demo-btn {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            bottom: 75px;
+            right: 15px;
+            z-index: 999;
+        }
+    }
 </style>
 
 <a href="https://thewebmistry.github.io/my-portfolio-demp/" target="_blank" class="fixed-demo-btn">
     <i class="fas fa-external-link-alt"></i> LIVE DEMO
 </a>
+
+<script>
+    // Improved smooth scrolling for anchor links (excluding already handled navigation items)
+    document.addEventListener('DOMContentLoaded', function() {
+        const anchorLinks = document.querySelectorAll('a[href^="#"]');
+        
+        anchorLinks.forEach(link => {
+            // Skip navigation items that already have custom scrolling logic
+            if (link.classList.contains('nav-item') || link.classList.contains('nav-scroll-btn')) {
+                return;
+            }
+            
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                
+                const targetElement = document.querySelector(href);
+                if (targetElement) {
+                    e.preventDefault();
+                    
+                    // Calculate target position with 100px offset from top
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - 100;
+                    
+                    // Smooth scroll to target
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>
